@@ -22,6 +22,7 @@ import sys
 import logging
 import argparse
 import subprocess as sp
+import base.new_project as np
 
 
 
@@ -58,7 +59,9 @@ def read_args(argv=None):
     new_parser.add_argument('-s', '--structure',
                             help="This flag used to decide folder structure <layer, component>",
                             choices=['layer', 'component', 'rest'],
-                            default=['component'])
+                            default='component')
+    new_parser.add_argument('-g', '--git', help="Enable git in project")
+    new_parser.add_argument('-v', '--venv', help="Enable virtual Environment in project")
     
 
     genrate_parser=sub_parser.add_parser('genrate', aliases=['g'])
@@ -75,7 +78,7 @@ def genrate_action(component, name):
     sp.call("%s/base/genrate_component.py %s %s"%(base_dir,args.component, args.name), shell=True)
 
 def create_new_project(args):
-    sp.call("%s/base/new_project.sh %s"%(base_dir, args.name), shell=True)
+    np.main(args)
 
 def main(args):
     logging.debug(args)
