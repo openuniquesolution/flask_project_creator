@@ -17,7 +17,6 @@ def create_app(config_file=None):
     app.config.from_pyfile(config_file)
     init_extentions(app)
     register_blueprint(app)
-
     return app
 
 app = create_app("../config.py")

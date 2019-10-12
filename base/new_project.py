@@ -29,7 +29,7 @@ def pre_common_project_files_work(name):
         os.path.join(tem_dir, "base_file"),
         os.path.join(name, "%s.py"%(name))
     )
-    os.chmod(os.path.join(name, "%s.py"%(name)), mode=555)
+    os.chmod(os.path.join(name, "%s.py"%(name)), mode=0o555)
     shutil.copyfile(
         os.path.join(tem_dir, "config"),
         os.path.join(name, "config.py")
