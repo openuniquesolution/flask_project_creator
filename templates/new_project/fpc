@@ -1,6 +1,5 @@
 Welcome! The following settings will be used to create your application:
 
-Python Version:     {{ pyversion }}
 Project Name:       {{ appname }}
 Project Path:       {{ path }}
 Virtualenv:         {% if virtualenv %}Enabled{% else %}Disabled{% endif %}

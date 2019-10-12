@@ -12,7 +12,6 @@ import subprocess
 base_dir = os.path.dirname(os.path.realpath(__file__))
 tem_dir = "%s/../templates/new_project" % (base_dir)
 
-
 def rest_project(name):
     os.mkdir(os.path.join(name, "app", "controller"))
     os.mkdir(os.path.join(name, "app", "models"))
@@ -77,10 +76,10 @@ def venv_enable(name):
         print("Could not find virtualenv executable. Ignoring")
 
 
-def rendeer_template(src_file, dest_file , map_var):
+def rendeer_template(template_name, dest_file , map_var):
     file_loader = FileSystemLoader(tem_dir)
     env = Environment(loader=file_loader)
-    tm = env.get_template(src_file)
+    tm = env.get_template(template_name)
     out = tm.render(map_var)
     
     with open(dest_file, "w", encoding='utf-8') as file_out:
@@ -106,16 +105,34 @@ def main(args):
         os.path.join(tem_dir, "__init__"),
         os.path.join(name, "app", "__init__.py")
     )
-    print(args.structure)
-    if args.structure == "rest":
-        rest_project(name)
-    elif args.structure == "component":
-        component_project(name)
-    elif args.structure == "layer":
-        layer_project(name)
+
+    function_to_call = {
+        "rest": rest_project,
+        "component": component_project,
+        "layer": layer_project
+    }
+
+    cwd = os.getcwd()
+    fullpath = os.path.join(cwd, name)
+
+    fpc_var_value = {
+    'appname': name,
+    'virtualenv': args.venv,
+    'path': fullpath,
+    'git': args.git,
+    'Structure': args.structure
+    }
+
+    function_to_call[args.structure](name)
 
     if args.git:
         git_enable(name)
 
     if args.venv:
         venv_enable(name)
+
+    rendeer_template(
+        "fpc",
+        os.path.join(fullpath,".fpc"),
+        fpc_var_value
+    )
