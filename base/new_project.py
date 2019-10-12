@@ -1,13 +1,6 @@
-import shutil
-import sys
-from jinja2 import FileSystemLoader, Environment
-
-if sys.version_info < (3, 0):
-    from shutilwhich import which
-else:
-    from shutil import which
 import os
-import subprocess
+import shutil
+from .util import git_enable, venv_enable, rendeer_template
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 tem_dir = "%s/../templates/new_project" % (base_dir)
@@ -27,68 +20,8 @@ def component_project(name):
 def layer_project(name):
     pass
 
-def git_enable(name):
-    output, error = subprocess.Popen(
-        ['git', 'init', name],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    ).communicate()
-    if error:
-        with open('git_error.log', 'w') as fd:
-            fd.write(error.decode('utf-8'))
-            print("Error with git init")
-            sys.exit(2)
-    shutil.copyfile(
-        os.path.join(tem_dir,'gitignore'),
-        os.path.join(name, '.gitignore')
-    )
 
-def venv_enable(name):
-    pass
-    virtualenv_exe = which('pyvenv')
-    if virtualenv_exe:
-        output, error = subprocess.Popen(
-            [virtualenv_exe, os.path.join('env')],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        ).communicate()
-        if error:
-            with open('virtualenv_error.log', 'w') as fd:
-                fd.write(error.decode('utf-8'))
-                print("An error occurred with virtualenv")
-                sys.exit(2)
-        venv_bin = os.path.join('env/bin')
-        output, error = subprocess.Popen(
-            [
-                os.path.join(venv_bin, 'pip'),
-                'install',
-                '-r',
-                os.path.join(name, 'requirements.txt')
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        ).communicate()
-        if error:
-            with open('pip_error.log', 'w') as fd:
-                fd.write(error.decode('utf-8'))
-                sys.exit(2)
-    else:
-        print("Could not find virtualenv executable. Ignoring")
-
-
-def rendeer_template(template_name, dest_file , map_var):
-    file_loader = FileSystemLoader(tem_dir)
-    env = Environment(loader=file_loader)
-    tm = env.get_template(template_name)
-    out = tm.render(map_var)
-    
-    with open(dest_file, "w", encoding='utf-8') as file_out:
-       file_out.write(out) 
-
-
-def main(args):
-    name = args.name
-    
+def pre_common_project_files_work(name):
     os.mkdir(name)
     os.mkdir(os.path.join(name, "app"))
 
@@ -106,33 +39,41 @@ def main(args):
         os.path.join(name, "app", "__init__.py")
     )
 
-    function_to_call = {
-        "rest": rest_project,
-        "component": component_project,
-        "layer": layer_project
-    }
-
+def post_common_project_files_work(args):
     cwd = os.getcwd()
-    fullpath = os.path.join(cwd, name)
+    fullpath = os.path.join(cwd, args.name)
 
     fpc_var_value = {
-    'appname': name,
+    'appname': args.name,
     'virtualenv': args.venv,
     'path': fullpath,
     'git': args.git,
     'Structure': args.structure
     }
 
-    function_to_call[args.structure](name)
-
-    if args.git:
-        git_enable(name)
-
-    if args.venv:
-        venv_enable(name)
-
     rendeer_template(
+        tem_dir,
         "fpc",
         os.path.join(fullpath,".fpc"),
         fpc_var_value
     )
+
+
+def main(args):
+    name = args.name
+    pre_common_project_files_work(name)
+    function_to_call = {
+        "rest": rest_project,
+        "component": component_project,
+        "layer": layer_project
+    }
+
+    function_to_call[args.structure](name)
+
+    if args.git:
+        git_enable(name, tem_dir)
+
+    if args.venv:
+        venv_enable(name)
+
+    post_common_project_files_work(args)
