@@ -1,4 +1,4 @@
-from flask import flask, render_template
+from flask import Flask, render_template
 
 
 
@@ -20,8 +20,8 @@ def create_app(config_file=None):
 
     return app
 
-app = create_app(config.py)
+app = create_app("../config.py")
 
-@app.errorhandler(404)
-def not_found():
-    return render_template('404.html'), 404
+#@app.errorhandler(404)
+#def not_found():
+#    return render_template('404.html'), 404

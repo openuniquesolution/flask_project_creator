@@ -1,0 +1,7 @@
+Welcome! The following settings will be used to create your application:
+
+Project Name:       {{ appname }}
+Project Path:       {{ path }}
+Virtualenv:         {% if virtualenv %}Enabled{% else %}Disabled{% endif %}
+Git:                {% if git %}Yes{% else %}{{ disabled }}No{% endif %}
+Project Structure:  {{ Structure }}
