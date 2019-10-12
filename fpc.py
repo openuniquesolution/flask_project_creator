@@ -23,6 +23,7 @@ import logging
 import argparse
 import subprocess as sp
 import base.new_project as np
+import logging
 
 
 
@@ -52,7 +53,7 @@ def read_args(argv=None):
 
     sub_parser = main_parser.add_subparsers(dest='action',help="Provide mode or actions you want to perform")
 
-        
+
     new_parser = sub_parser.add_parser('new', aliases=['n'])
     new_parser.add_argument('name',
                             help="New project name you want to create")
@@ -60,9 +61,9 @@ def read_args(argv=None):
                             help="This flag used to decide folder structure <layer, component>",
                             choices=['layer', 'component', 'rest'],
                             default='component')
-    new_parser.add_argument('-g', '--git', help="Enable git in project")
-    new_parser.add_argument('-v', '--venv', help="Enable virtual Environment in project")
-    
+    new_parser.add_argument('-g', '--git', help="Enable git in project", default=False, action='store_true')
+    new_parser.add_argument('-v', '--venv', help="Enable virtual Environment in project", default=False, action='store_true')
+
 
     genrate_parser=sub_parser.add_parser('genrate', aliases=['g'])
     genrate_parser.add_argument('component',
@@ -73,7 +74,6 @@ def read_args(argv=None):
     return main_parser.parse_args(argv)
 ###########################################################################################################
 
-
 def genrate_action(component, name):
     sp.call("%s/base/genrate_component.py %s %s"%(base_dir,args.component, args.name), shell=True)
 
@@ -82,20 +82,20 @@ def create_new_project(args):
 
 def main(args):
     logging.debug(args)
-    
+
     # action = args.action
     # component= args.component
     # name = args.name
-    
+
     if args.action == "genrate" or args.action == 'g':
         component = args.component
         name = args.name
 
         genrate_action(component, name)
     elif args.action == "new" or args.action == 'n':
-        
+
         create_new_project(args)
-            
+
 
 if __name__ == "__main__":
     args = read_args(sys.argv[1:])

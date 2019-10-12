@@ -1,5 +1,6 @@
 import shutil
 import sys
+from jinja2 import FileSystemLoader, Environment
 
 if sys.version_info < (3, 0):
     from shutilwhich import which
@@ -11,8 +12,8 @@ import subprocess
 base_dir = os.path.dirname(os.path.realpath(__file__))
 tem_dir = "%s/../templates/new_project" % (base_dir)
 
+
 def rest_project(name):
-    print("Inside rest template")
     os.mkdir(os.path.join(name, "app", "controller"))
     os.mkdir(os.path.join(name, "app", "models"))
 
@@ -39,7 +40,7 @@ def git_enable(name):
             print("Error with git init")
             sys.exit(2)
     shutil.copyfile(
-        os.path.join(tem_dir, 'templates', '.gitignore'),
+        os.path.join(tem_dir,'gitignore'),
         os.path.join(name, '.gitignore')
     )
 
@@ -75,17 +76,28 @@ def venv_enable(name):
     else:
         print("Could not find virtualenv executable. Ignoring")
 
-def main(args):
-    print("Inside rest template")
 
+def rendeer_template(src_file, dest_file , map_var):
+    file_loader = FileSystemLoader(tem_dir)
+    env = Environment(loader=file_loader)
+    tm = env.get_template(src_file)
+    out = tm.render(map_var)
+    
+    with open(dest_file, "w", encoding='utf-8') as file_out:
+       file_out.write(out) 
+
+
+def main(args):
     name = args.name
     
     os.mkdir(name)
     os.mkdir(os.path.join(name, "app"))
+
     shutil.copyfile(
         os.path.join(tem_dir, "base_file"),
         os.path.join(name, "%s.py"%(name))
     )
+    os.chmod(os.path.join(name, "%s.py"%(name)), mode=555)
     shutil.copyfile(
         os.path.join(tem_dir, "config"),
         os.path.join(name, "config.py")
@@ -96,7 +108,6 @@ def main(args):
     )
     print(args.structure)
     if args.structure == "rest":
-        print("Inside rest template")
         rest_project(name)
     elif args.structure == "component":
         component_project(name)
@@ -108,4 +119,3 @@ def main(args):
 
     if args.venv:
         venv_enable(name)
-
