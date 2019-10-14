@@ -3,9 +3,11 @@ from flask import Flask, render_template
 
 
 def register_blueprint(app):
-    ## imports came here
-    pass
+    ## imports Bluprint Modules
+    from .routes import base
 
+    # Register Blueprint here
+    app.register_blueprint(base)
 
 def init_extentions(app):
     ## init Extentions,
@@ -17,7 +19,6 @@ def create_app(config_file=None):
     app.config.from_pyfile(config_file)
     init_extentions(app)
     register_blueprint(app)
-
     return app
 
 app = create_app("../config.py")
