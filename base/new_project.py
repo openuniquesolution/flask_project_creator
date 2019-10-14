@@ -38,6 +38,10 @@ def pre_common_project_files_work(name):
         os.path.join(tem_dir, "__init__"),
         os.path.join(name, "app", "__init__.py")
     )
+    shutil.copyfile(
+        os.path.join(tem_dir, "routes"),
+        os.path.join(name, "app", "routes.py")
+    )
 
 def post_common_project_files_work(args):
     cwd = os.getcwd()

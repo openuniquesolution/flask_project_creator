@@ -1,0 +1,8 @@
+from flask import Blueprint
+
+base = Blueprint("base", __name__)
+
+
+@base.route("/")
+def index_page():
+    return "Welcome to flask index page by fpc"

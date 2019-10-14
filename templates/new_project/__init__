@@ -3,9 +3,11 @@ from flask import Flask, render_template
 
 
 def register_blueprint(app):
-    ## imports came here
-    pass
+    ## imports Bluprint Modules
+    from .routes import base
 
+    # Register Blueprint here
+    app.register_blueprint(base)
 
 def init_extentions(app):
     ## init Extentions,
